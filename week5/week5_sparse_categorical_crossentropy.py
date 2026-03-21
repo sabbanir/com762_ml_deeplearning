@@ -1,3 +1,4 @@
+from keras.src.saving import load_model
 from numpy import argmax
 from pandas import read_csv
 from sklearn.model_selection import train_test_split
@@ -13,7 +14,8 @@ X, y = df.values[:, :-1], df.values[:, -1]
 # ensure all data are floating point values
 X = X.astype('float32')
 # encode strings to integer
-y = LabelEncoder().fit_transform(y)
+encoder = LabelEncoder()
+y = encoder.fit_transform(y)
 # split into train and test datasets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
@@ -36,5 +38,14 @@ predict_x = np.array([[5.1,3.5,1.4,0.2]])
 
 yhat = model.predict(predict_x)
 print('Predicted: %s (class=%d)' % (yhat, argmax(yhat)))
+
+model.save("model.h5")
+
+newmodel= load_model("model.h5")
+newmodel.predict(predict_x)
+print(encoder.classes_)
+p_class = encoder.inverse_transform([argmax(yhat)])[0]
+print("Predicted class :", p_class)
+
 
 
